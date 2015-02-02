@@ -1,0 +1,25 @@
+{
+	"load_count":
+	[
+		"Helload World!"
+	],
+	"new_file_count":
+	[
+		"Hello World!"
+	],
+	"save_count":
+	[
+		"Hello Save World!"
+	],
+	"unlocked_titles":
+	[
+		"view_achievement_count",
+		"new_file_count",
+		"load_count",
+		"save_count"
+	],
+	"view_achievement_count":
+	[
+		"Checking!"
+	]
+}

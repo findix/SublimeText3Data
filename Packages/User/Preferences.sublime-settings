@@ -1,0 +1,12 @@
+{
+	"color_scheme": "Packages/User/Flatland Monokai (SublimePythonIDE).tmTheme",
+	"font_face": "source code pro",
+	"font_size": 12,
+	"ignored_packages":
+	[
+		"Markdown"
+	],
+	"tab_size": 4,
+	"theme": "Flatland Dark.sublime-theme",
+	"translate_tabs_to_spaces": true
+}

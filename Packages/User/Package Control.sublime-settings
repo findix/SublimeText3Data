@@ -1,0 +1,43 @@
+{
+	"http_proxy": "http://172.0.0.1:1080",
+	"https_proxy": "http://172.0.0.1:1080",
+	"in_process_packages":
+	[
+	],
+	"installed_dependencies":
+	[
+		"0_package_control_loader",
+		"bz2"
+	],
+	"installed_packages":
+	[
+		"Alignment",
+		"AutoFileName",
+		"Better CoffeeScript",
+		"BracketHighlighter",
+		"ConvertToUTF8",
+		"CSS Format",
+		"Emmet",
+		"Git",
+		"Highlight",
+		"HTML-CSS-JS Prettify",
+		"JavaScript & NodeJS Snippets",
+		"jQuery",
+		"LESS",
+		"Less2Css",
+		"Markdown Preview",
+		"MarkdownEditing",
+		"Package Control",
+		"Python PEP8 Autoformat",
+		"SCSS",
+		"SideBarEnhancements",
+		"SublimeAStyleFormatter",
+		"SublimeCodeIntel",
+		"SublimePythonIDE",
+		"SublimeREPL",
+		"Tag",
+		"Terminal",
+		"Theme - Flatland",
+		"TrailingSpaces"
+	]
+}

@@ -1,6 +1,9 @@
 Sublime Text 2 & 3 AStyle Formatter Plugin
 ==========================================
 
+[![Travis-CI Build Status](https://travis-ci.org/timonwong/SublimeAStyleFormatter.svg?branch=master)](https://travis-ci.org/timonwong/SublimeAStyleFormatter)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/timonwong/SublimeAStyleFormatter?branch=master&svg=true)](https://ci.appveyor.com/project/timonwong/SublimeAStyleFormatter)
+
 Description
 -----------
 
@@ -149,7 +152,7 @@ License
 
 This plugin is using MIT License:
 
-    Copyright (c) 2012 Timon Wong
+    Copyright (c) 2012-2015 Timon Wong
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
     this software and associated documentation files (the "Software"), to deal in

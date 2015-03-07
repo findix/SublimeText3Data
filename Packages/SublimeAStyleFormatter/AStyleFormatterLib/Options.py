@@ -1,5 +1,5 @@
 """
-Copyright (c) 2012 Timon Wong
+Copyright (c) 2012-2015 Timon Wong
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -20,11 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-__all__ = ["parse_mode_setting", "parse_setting"]
+
+class ImproperlyConfigured(Exception):
+    def __init__(self, option_name, option_value, extra_message=None):
+        self._name = option_name
+        self._value = option_value
+        self.extra_message = extra_message
+
+    def __str__(self):
+        return "Invalid value '{value}' in option '{name}'".format(
+            name=self._name, value=self._value)
 
 
-class RangeError(Exception):
-    pass
+class RangeError(ImproperlyConfigured):
+    def __init__(self, option_name, option_value, minval, maxval):
+        super(RangeError, self).__init__(option_name, option_value)
+        self._minval = minval
+        self._maxval = maxval
+
+    def __str__(self):
+        return "Value in option '{name}' should be between '{minval}' and " \
+               "'{maxval}'".format(name=self._name,
+                                   minval=self._minval,
+                                   maxval=self._range_max)
 
 
 def ensure_value_range(option_name, value, minval=None, maxval=None):
@@ -40,7 +58,7 @@ def ensure_value_range(option_name, value, minval=None, maxval=None):
 
     minval_str = "-Inf" if minval is None else str(minval)
     maxval_str = "+Inf" if maxval is None else str(maxval)
-    raise RangeError("{0} should between {1} and {2}".format(option_name, minval_str, maxval_str))
+    raise RangeError(option_name, value, minval_str, maxval_str)
 
 
 def process_option_generic(options, option_name, value):
@@ -48,20 +66,33 @@ def process_option_generic(options, option_name, value):
         options.append("--{0}".format(option_name))
     return options
 
+STYLE_OPTIONS = set([
+    "allman", "bsd", "break", "java", "attach", "kr", "k&r", "k/r",
+    "stroustrup", "whitesmith", "banner", "gnu", "linux", "horstmann", "1tbs",
+    "otbs", "google", "pico", "lisp", "python", "vtk"])
+
 
 def process_option_style(options, option_name, value):
-    if option_name != "style":
+    assert option_name == "style"
+    if not value:
         return options
-    if not value in ("allman", "ansi", "bsd", "break", "java", "attach", "kr", "k&r", "k/r",
-                     "stroustrup", "whitesmith", "banner", "gnu", "linux", "horstmann", "1tbs",
-                     "otbs", "python", "pico", "lisp", "python"):
-        return options
+    if value not in STYLE_OPTIONS:
+        extra_message = None
+        if value == "ansi":
+            # Give user a hint about 'ansi' format style
+            extra_message = \
+                "'ansi' style is removed from astyle in v2.05, please update" \
+                " your settings and use 'allman' instead. See " \
+                "http://astyle.sourceforge.net/news.html for more information."
+        raise ImproperlyConfigured(option_name, value,
+                                   extra_message=extra_message)
     options.append("--{0}={1}".format(option_name, value))
     return options
 
 
 def process_option_min_conditional_indent(options, option_name, value):
-    if option_name != "min-conditional-indent" or value is None:
+    assert option_name == "min-conditional-indent"
+    if value is None:
         return options
     ensure_value_range(option_name, value, minval=0, maxval=3)
     options.append("--{0}={1}".format(option_name, value))
@@ -69,7 +100,8 @@ def process_option_min_conditional_indent(options, option_name, value):
 
 
 def process_option_max_instatement_indent(options, option_name, value):
-    if option_name != "max-instatement-indent" or value is None:
+    assert option_name == "max-instatement-indent"
+    if value is None:
         return options
     ensure_value_range(option_name, value, minval=40, maxval=120)
     options.append("--{0}={1}".format(option_name, value))
@@ -77,7 +109,8 @@ def process_option_max_instatement_indent(options, option_name, value):
 
 
 def process_option_max_code_length(options, option_name, value):
-    if option_name != "max-code-length" or value is None or value == -1:
+    assert option_name == "max-code-length"
+    if value is None or value == -1:
         return options
     ensure_value_range(option_name, value, minval=50, maxval=200)
     options.append("--{0}={1}".format(option_name, value))
@@ -85,8 +118,11 @@ def process_option_max_code_length(options, option_name, value):
 
 
 def process_option_break_blocks(options, option_name, value):
-    if option_name != "break-blocks" or value is None or value == "":
+    assert option_name == "break-blocks"
+    if not value:
         return options
+    if value not in ("default", "all"):
+        raise ImproperlyConfigured(option_name, value)
     if value == "default":
         options.append("--break-blocks")
     elif value == "all":
@@ -95,45 +131,36 @@ def process_option_break_blocks(options, option_name, value):
 
 
 def process_option_align_pointer(options, option_name, value):
-    if option_name != "align-pointer":
+    assert option_name == "align-pointer"
+    if not value:
         return options
-    if not value in ("type", "middle", "name"):
-        return options
+    if value not in ("type", "middle", "name"):
+        raise ImproperlyConfigured(option_name, value)
     options.append("--{0}={1}".format(option_name, value))
     return options
 
 
 def process_option_align_reference(options, option_name, value):
-    if option_name != "align-reference":
+    assert option_name == "align-reference"
+    if not value:
         return options
-    if not value in ("none", "type", "middle", "name"):
-        return options
+    if value not in ("none", "type", "middle", "name"):
+        raise ImproperlyConfigured(option_name, value)
     options.append("--{0}={1}".format(option_name, value))
     return options
 
 
 def process_option_pad_method_colon(options, option_name, value):
-    if option_name != "pad-method-colon":
+    assert option_name == "pad-method-colon"
+    if not value:
         return options
-    if not value in ("none", "all", "after", "before"):
-        return options
+    if value not in ("none", "all", "after", "before"):
+        raise ImproperlyConfigured(option_name, value)
     options.append("--{0}={1}".format(option_name, value))
     return options
 
 
-def special_process_option_indent(options, option_name, indent_method, spaces):
-    if option_name != "indent":
-        return options
-    if not indent_method in ("spaces", "tab", "force-tab", "force-tab-x"):
-        return options
-    if not spaces:
-        spaces = 4
-    ensure_value_range("indent=%s" % indent_method, spaces, 2, 20)
-    options.append("--indent={0}={1}".format(indent_method, spaces))
-    return options
-
-
-g_setting_option_map = {
+OPTION_PROCESSOR_MAP = {
     "style":                    process_option_style,
     "indent-classes":           process_option_generic,
     "indent-modifiers":         process_option_generic,
@@ -141,7 +168,7 @@ g_setting_option_map = {
     "indent-cases":             process_option_generic,
     "indent-namespaces":        process_option_generic,
     "indent-labels":            process_option_generic,
-    "indent-preprocessor":      process_option_generic,
+    "indent-preproc-block":     process_option_generic,
     "indent-preproc-define":    process_option_generic,
     "indent-preproc-cond":      process_option_generic,
     "indent-col1-comments":     process_option_generic,
@@ -168,7 +195,6 @@ g_setting_option_map = {
     "add-one-line-brackets":    process_option_generic,
     "keep-one-line-blocks":     process_option_generic,
     "keep-one-line-statements": process_option_generic,
-    "convert-tabs":             process_option_generic,
     "close-templates":          process_option_generic,
     "remove-comment-prefix":    process_option_generic,
     "max-code-length":          process_option_max_code_length,
@@ -182,22 +208,38 @@ g_setting_option_map = {
 }
 
 
-def parse_mode_setting(mode):
+def build_astyle_mode_option(mode):
     if not mode:
         return ''
     return '--mode=' + mode
 
 
-def parse_setting(setting):
+def special_process_option_indent(options, indent_method, spaces):
+    if not indent_method:
+        return options
+    if indent_method not in ("spaces", "tab", "force-tab", "force-tab-x"):
+        raise ImproperlyConfigured("indent", "%s:%s" % (indent_method, spaces))
+    option = '--indent={0}'.format(indent_method)
+    if spaces is not None:
+        ensure_value_range("indent=%s" % indent_method, spaces, 2, 20)
+        option += '={0}'.format(spaces)
+    options.append(option)
+    return options
+
+
+def build_astyle_options(settings, indent_options, convert_tabs=False):
     options = []
     # Special indent option handling
-    if "indent" in setting:
-        indent_method = setting["indent"]
-        spaces = setting.get("indent-spaces", 4)
-        options = special_process_option_indent(options, "indent", indent_method, spaces)
-    for option_name, function in g_setting_option_map.items():
-        if not option_name in setting:
+    if not settings['indent'] and not settings['indent-spaces']:
+        settings['indent'] = indent_options['indent']
+        settings['indent-spaces'] = indent_options['spaces']
+    options = special_process_option_indent(
+        options, settings["indent"], settings.get("indent-spaces"))
+    if convert_tabs:
+        options.append('--convert-tabs')
+    for option_name, function in OPTION_PROCESSOR_MAP.items():
+        if option_name not in settings:
             continue
-        value = setting[option_name]
+        value = settings[option_name]
         options = function(options, option_name, value)
     return options

@@ -21,15 +21,22 @@
     // Please visit http://astyle.sourceforge.net/astyle.html for more information
     "options_default": {
         // Default bracket style
-        // Can be either "allman", "ansi", "bsd", "break", "java", "attach", "kr", "k&r",
+        // Can be one of "allman", "bsd", "break", "java", "attach", "kr", "k&r",
         // "k/r" "stroustrup", "whitesmith", "banner", "gnu", "linux", "horstmann",
-        // "1tbs", "otbs ", "google", "pico", "lisp", "python", or ""
-        "style": "ansi",
+        // "1tbs", "otbs ", "google", "pico", "lisp", "python", "vtk", or null
+        // for default.
+        "style": null,
 
         // Tab options
-        // Can be either "spaces", "tab" "force-tab" or "force-tab-x"
-        "indent": "spaces",
-        "indent-spaces": 4,
+        // "indent": Can be one of "spaces", "tab" "force-tab", "force-tab-x", or null
+        // "indent-spaces": Can be either null or numbers
+        //
+        // While both "indent" or "indent-spaces" are null (default), the indentation options
+        // will be retrieved from Sublime Text view settings: `tab_size`, `translate_tabs_to_spaces`:
+        //   1. If `translate_tabs_to_spaces` is true, "indent" will be "spaces", otherwise, "tab";
+        //   2. "indent-spaces" will equal to `tab_size`.
+        "indent": null,
+        "indent-spaces": null,
 
         // === Bracket Modify Options ===
         // Attach brackets to a namespace statement. This is done regardless of
@@ -85,11 +92,18 @@
         // current indentation, rather than being flushed to the left (the default).
         "indent-labels": false,
 
+        // Indent preprocessor blocks at bracket level zero, and immediately within
+        // a namespace. There are restrictions on what will be indented. Blocks
+        // within methods, classes, arrays, etc, will not be indented. Blocks
+        // containing brackets or multi-line define statements will not be indented.
+        // Without this option the preprocessor block is not indented.
+        "indent-preproc-block": false,
+
         // Indent multi-line preprocessor definitions ending with a backslash.
         // Should be used with `convert-tabs` for proper results. Does a pretty
         // good job, but cannot perform miracles in obfuscated preprocessor
         // definitions. Without this option the preprocessor statements remain unchanged.
-        "indent-preproc-define": true,
+        "indent-preproc-define": false,
 
         // Indent preprocessor conditional statements to the same level as the
         // source code.
@@ -98,7 +112,7 @@
         // Indent C++ comments beginning in column one. By default C++ comments
         // beginning in column one are not indented. This option will allow the
         // comments to be indented with the code.
-        "indent-col1-comments": true,
+        "indent-col1-comments": false,
 
         // Set the minimal indent that is added when a header is built of multiple
         // lines. This indent helps to easily separate the header from the command
@@ -128,13 +142,13 @@
 
         // === Padding Options ===
 
-        // ""        - Do nothing
+        // null      - Do nothing
         // "default" - Pad empty lines around header blocks (e.g. 'if',
         //              'for', 'while'...).
         // "all"     - Pad empty lines around header blocks (e.g. 'if',
         //              'for', 'while'...). Treat closing header blocks
         //              (e.g. 'else', 'catch') as stand-alone blocks.
-        "break-blocks": "",
+        "break-blocks": null,
 
         // Insert space padding around operators. Any end of line comments
         // will remain in the original column, if possible. Note that there
@@ -193,8 +207,8 @@
         // or variable name (right), or place it between the type and name (middle).
         // The spacing between the type and name will be preserved, if possible. To format
         // references separately use the following `align-reference` option.
-        // can be either "", "type", "middle" or "name"
-        "align-pointer": "name",
+        // can be one of null, "type", "middle" or "name"
+        "align-pointer": null,
 
         // This option will align references separate from pointers. Pointers are not changed
         // by this option. If pointers and references are to be aligned the same, use the
@@ -202,8 +216,8 @@
         // the reference alignment. The other options are the same as for `align-pointer`.
         // In the case of a reference to a pointer (*&) with conflicting alignments, the
         // `align-pointer` value will be used.
-        // can be either "none", "type", "middle", "name"
-        "align-reference": "name",
+        // can be one of "none", "type", "middle", "name", or null for default.
+        "align-reference": null,
 
         // === Formatting Options ===
 
@@ -238,16 +252,10 @@
         "remove-brackets": false,
 
         // Don't break one-line blocks.
-        "keep-one-line-blocks": false,
+        "keep-one-line-blocks": true,
 
         // Don't break complex statements and multiple statements residing on a single line.
         "keep-one-line-statements": true,
-
-        // Converts tabs into spaces in the non-indentation part of the line. The number of
-        // spaces inserted will maintain the spacing of the tab. The current setting for
-        //  spaces per tab is used. It may not produce the expected results if `convert-tabs`
-        //  is used when changing spaces per tab. Tabs are not replaced in quotes.
-        "convert-tabs": true,
 
         // Closes whitespace in the angle brackets of template definitions. Closing
         // the ending angle brackets is now allowed by the C++11 standard.
@@ -305,8 +313,8 @@
         // spaces will be deleted. Colons immediarely preceeding a paren will not
         // be padded. This option is effective for Objective-C files only.
         //
-        // Can be either "none", "all", "after" or "before"
-        "pad-method-colon": "none"
+        // Can be one of "none", "all", "after" or "before", or null for default.
+        "pad-method-colon": null
     },
 
     //
@@ -323,6 +331,19 @@
     //                            a full path for that file, environment variable may be included.
     //                            e.g.: "additional_options_file": "%USERPROFILE%/astylerc" // (Windows)
     //                            e.g.: "additional_options_file": "$HOME/.astylerc" // (Linux)
+    //                            === Additional variables that you may use ===
+    //                            $file_path  The directory of the current file, e.g., C:\Files.
+    //                            $file   The full path to the current file, e.g., C:\Files\Chapter1.txt.
+    //                            $file_name  The name portion of the current file, e.g., Chapter1.txt.
+    //                            $file_extension The extension portion of the current file, e.g., txt.
+    //                            $file_base_name The name-only portion of the current file, e.g., Document.
+    //                            $packages   The full path to the Packages folder.
+    //                            The following requires "Sublime Text 3"
+    //                            $project    The full path to the current project file.
+    //                            $project_path   The directory of the current project file.
+    //                            $project_name   The name portion of the current project file.
+    //                            $project_extension  The extension portion of the current project file.
+    //                            $project_base_name  The name-only portion of the current project file.
     //
     // "use_only_additional_options": While true, SublimeAStyleFormatter will *only* process
     //                                options in *both* "additional_options" and "additional_options_file".

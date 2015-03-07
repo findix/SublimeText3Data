@@ -1,3 +1,29 @@
+v3.1.1 (02/28/2015)
+
+* Hot-Fix for mysterious ValueError(), introduced in v3.1.0.
+
+v3.1.0 (02/28/2015)
+
+* The following default options were changed, according to *Artistic Style* defaults:
+    * `indent-preproc-define`: `true` -> `false`
+    * `indent-col1-comments`: `true` -> `false`
+    * `align-pointer`: `"name"` -> "not set" (Use *Artistic Style* defaults, which is "no change")
+    * `align-reference`: `"name"` -> "not set" (Use *Artistic Style* defaults, which is "same as `align-pointer`")
+    * `keep-one-line-blocks`: `false` -> `true`
+* Now an output panel with user-friendly error message will show if anything goes wrong.
+* Remove `convert-tabs` option, because it's duplicated with Sublime Text's `translate_tabs_to_spaces` setting.
+* Fix a NoneType error while formatting unsaved files.
+
+v3.0.0 (02/20/2015)
+
+* Upgrade astyle binary to v2.05.1.
+* Improper configuration settings will raise errors now.
+* Fix missing "google" style option.
+* Remove "ansi" style option because it's deprecated in astyle v2.05.
+* Remove "indent-preprocessor" option because it was deprecated in astyle v2.04.
+* Add "indent-preproc-block" option (introduced in astyle v2.05).
+* Add more expanded variables for reaching astylerc file (see `SublimeAStyleFormatter.sublime-settings` for more details, in `additional_options_file`).
+
 v2.1.0 (04/23/2014)
 
 * Upgrade astyle binary to v2.04.

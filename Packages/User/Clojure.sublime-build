@@ -1,0 +1,9 @@
+{
+    "cmd": ["clj", "$file"],
+    "file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+    "selector": "source.clj",
+
+        "windows": {
+        "cmd": ["clj.bat", "$file"]
+    }
+}

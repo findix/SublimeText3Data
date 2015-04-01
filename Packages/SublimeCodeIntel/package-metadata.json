@@ -1,1 +1,1 @@
-{"dependencies": [], "description": "Full-featured code intelligence and smart autocomplete engine", "url": "http://sublimecodeintel.github.io/SublimeCodeIntel/", "platforms": ["*"], "version": "2.1.7+st3", "sublime_text": ">=3000"}
+{"url": "http://sublimecodeintel.github.io/SublimeCodeIntel/", "dependencies": [], "version": "2.1.9+st3", "platforms": ["*"], "description": "Full-featured code intelligence and smart autocomplete engine", "sublime_text": ">=3000"}

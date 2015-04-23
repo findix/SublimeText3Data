@@ -1,7 +1,7 @@
 {
     "cmd": ["clj", "$file"],
     "file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-    "selector": "source.clj",
+    "selector": "source.clojure",
 
         "windows": {
         "cmd": ["clj.bat", "$file"]

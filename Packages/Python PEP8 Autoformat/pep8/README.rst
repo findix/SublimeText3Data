@@ -7,11 +7,6 @@ conventions in `PEP 8`_.
 .. _PEP 8: http://www.python.org/dev/peps/pep-0008/
 
 
-Mailing List
-------------
-http://groups.google.com/group/pep8
-
-
 Features
 --------
 
@@ -34,9 +29,7 @@ You can install, upgrade, uninstall pep8.py with these commands::
   $ pip uninstall pep8
 
 There's also a package for Debian/Ubuntu, but it's not always the
-latest version::
-
-  $ sudo apt-get install pep8
+latest version.
 
 Example usage and output
 ------------------------
@@ -82,62 +75,17 @@ Or you can display how often each error was found::
   612     W601 .has_key() is deprecated, use 'in'
   1188    W602 deprecated form of raising exception
 
-Quick help is available on the command line::
+Links
+-----
 
-  $ pep8 -h
-  Usage: pep8 [options] input ...
-
-  Options:
-    --version            show program's version number and exit
-    -h, --help           show this help message and exit
-    -v, --verbose        print status messages, or debug with -vv
-    -q, --quiet          report only file names, or nothing with -qq
-    -r, --repeat         (obsolete) show all occurrences of the same error
-    --first              show first occurrence of each error
-    --exclude=patterns   exclude files or directories which match these comma
-                         separated patterns (default: .svn,CVS,.bzr,.hg,.git)
-    --filename=patterns  when parsing directories, only check filenames matching
-                         these comma separated patterns (default: *.py)
-    --select=errors      select errors and warnings (e.g. E,W6)
-    --ignore=errors      skip errors and warnings (e.g. E4,W)
-    --show-source        show source code for each error
-    --show-pep8          show text of PEP 8 for each error (implies --first)
-    --statistics         count errors and warnings
-    --count              print total number of errors and warnings to standard
-                         error and set exit code to 1 if total is not null
-    --max-line-length=n  set maximum allowed line length (default: 79)
-    --format=format      set the error format [default|pylint|<custom>]
-    --diff               report only lines changed according to the unified diff
-                         received on STDIN
-
-    Testing Options:
-      --testsuite=dir    run regression tests from dir
-      --doctest          run doctest on myself
-      --benchmark        measure processing speed
-
-    Configuration:
-      The project options are read from the [pep8] section of the .pep8 file
-      located in any parent folder of the path(s) being processed. Allowed
-      options are: exclude, filename, select, ignore, max-line-length,
-      count, format, quiet, show-pep8, show-source, statistics, verbose.
-
-      --config=path      config file location (default: /home/user/.config/pep8)
-
-Feedback
---------
-
-Your feedback is more than welcome. Write email to
-johann@rocholl.net or post bugs and feature requests on github:
-
-http://github.com/jcrocholl/pep8/issues
-
-Source download
----------------
-
-.. image:: https://secure.travis-ci.org/jcrocholl/pep8.png?branch=master
-   :target: https://secure.travis-ci.org/jcrocholl/pep8
+.. image:: https://api.travis-ci.org/jcrocholl/pep8.png?branch=master
+   :target: https://travis-ci.org/jcrocholl/pep8
    :alt: Build status
 
-The source code is currently available on github. Fork away!
+.. image:: https://pypip.in/wheel/pep8/badge.png?branch=master
+   :target: https://pypi.python.org/pypi/pep8
+   :alt: Wheel Status
 
-http://github.com/jcrocholl/pep8/
+* `Read the documentation <http://pep8.readthedocs.org/>`_
+
+* `Fork me on GitHub <http://github.com/jcrocholl/pep8>`_

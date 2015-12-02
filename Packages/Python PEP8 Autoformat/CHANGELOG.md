@@ -2,6 +2,10 @@
 
 ## Python PEP8 Autoformat
 
+### 2015.10.02-01
+  - Upgrade autopep8 to version 1.2.1 to fix [Issue #23 Goes into infinite loop when formatting this 'incorrect' code](https://bitbucket.org/StephaneBunel/pythonpep8autoformat/issues/23/goes-into-infinite-loop-when-formatting). Thx to Bharadwaj Srigiriraju.
+  - Upgrade pep8 to version 1.6.2.
+
 ### 2014.10.17-01
   - Fix ST2 [Issue #20](https://bitbucket.org/StephaneBunel/pythonpep8autoformat/issue/20/no-module-named-argparse) by including argparse module in package.
   - Use sublime.packages_path() API to locate package.
@@ -11,7 +15,7 @@
   - Fix autopep8 API changes and close [Issue #19](https://bitbucket.org/StephaneBunel/pythonpep8autoformat/issue/19/not-running-attribute-error)
 
 ### 2014.09.30-01
-  - Upgrade autopep8 to version 1.0.5a0 to fix [Issue #7 Crashes Sublime Text when extra parenthesis is added](https://bitbucket.org/StephaneBunel/pythonpep8autoformat/issue/18/crashes-sublime-text-when-extra). Thx to Christopher Welborn.
+  - Upgrade autopep8 to version 1.0.5a0 to fix [Issue #18 Crashes Sublime Text when extra parenthesis is added](https://bitbucket.org/StephaneBunel/pythonpep8autoformat/issue/18/crashes-sublime-text-when-extra). Thx to Christopher Welborn.
   - Upgrade pep8 to version 1.6.0a0.
 
 ### 2013.08.27-01

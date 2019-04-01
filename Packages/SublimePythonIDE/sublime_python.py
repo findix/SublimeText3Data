@@ -34,6 +34,7 @@ CREATION_FLAGS = 0 if os.name != "nt" else 0x08000000
 DEBUG_PORT = None
 SERVER_DEBUGGING = False
 
+LAST_ERROR_TIME = None
 
 # Constants
 SERVER_SCRIPT = os.path.join(
@@ -128,10 +129,10 @@ class Proxy(object):
             elif SERVER_DEBUGGING:
                 # debug mode two
                 self.port = self.get_free_port()
-                proc_args = [self.python, SERVER_SCRIPT,
+                proc_args = self.python + [SERVER_SCRIPT,
                              str(self.port), " --debug"]
                 self.proc = subprocess.Popen(
-                    proc_args, cwd=os.path.dirname(self.python),
+                    proc_args, cwd=os.path.dirname(self.python[0]),
                     stderr=subprocess.PIPE, creationflags=CREATION_FLAGS)
                 self.queue = Queue()
                 self.stderr_reader = AsynchronousFileReader(
@@ -144,9 +145,9 @@ class Proxy(object):
             else:
                 # standard run of the server in end-user mode
                 self.port = self.get_free_port()
-                proc_args = [self.python, SERVER_SCRIPT, str(self.port)]
+                proc_args = self.python + [SERVER_SCRIPT, str(self.port)]
                 self.proc = subprocess.Popen(
-                    proc_args, cwd=os.path.dirname(self.python),
+                    proc_args, cwd=os.path.dirname(self.python[0]),
                     creationflags=CREATION_FLAGS)
                 print("started server on port %i with %s" %
                       (self.port, self.python))
@@ -300,36 +301,105 @@ def project_venv_python(view):
         return python
 
 
+def shebang_line_python(view):
+    shebang_line = view.substr(view.line(0))
+    if shebang_line.startswith('#!'):
+        return shebang_line[2:].split(None, 1)
+
+
+def normalize_path(args, make_abs=False):
+    if not args:
+        return None
+    elif type(args) is str:
+        args = [args]
+    elif type(args) is not list:
+        args = list(args)
+
+    # args is guaranteed to be a non-empty list at this point
+    if make_abs:
+        args[0] = os.path.abspath(os.path.realpath(os.path.expanduser(args[0])))
+    return args
+
+
 def proxy_for(view):
     '''retrieve an existing proxy for an external Python process.
-    will automatically create a new proxy if non exists for the
+    will automatically create a new proxy if none exists for the
     requested interpreter'''
     proxy = None
+
+    python_detectors = [
+        lambda: normalize_path(get_setting("python_interpreter", view, ""), True),
+        lambda: normalize_path(project_venv_python(view)),
+        lambda: normalize_path(shebang_line_python(view)),
+        lambda: normalize_path(system_python())
+    ]
     with PROXY_LOCK:
-        python = get_setting("python_interpreter", view, "")
-        if python == "":
-            python = project_venv_python(view) or system_python()
-        else:
-            python = os.path.abspath(
-                os.path.realpath(os.path.expanduser(python)))
+        for detector in python_detectors:
+            python = detector()
+            if python is not None:
+                break
 
-        if not os.path.exists(python):
-            raise OSError("""
---------------------------------------------------------------------------------------------------------------
-Could not detect python, please set the python_interpreter (see README) using an absolute path or make sure a
-system python is installed and is reachable on the PATH.
---------------------------------------------------------------------------------------------------------------""")
+        if not python or not os.path.exists(python[0]):
+            show_python_not_found_error(python_detectors)
+            return
 
-        if python in PROXIES:
-            proxy = PROXIES[python]
+        # Since lists cannot be used as keys, a temporary tuple version of this is created.
+        python_as_key = tuple(python)
+        if python_as_key in PROXIES:
+            proxy = PROXIES[python_as_key]
         else:
             try:
                 proxy = Proxy(python)
             except OSError:
                 pass
             else:
-                PROXIES[python] = proxy
+                PROXIES[python_as_key] = proxy
     return proxy
+
+
+def show_python_not_found_error(python_detectors):
+    global LAST_ERROR_TIME
+    if LAST_ERROR_TIME is not None and (time.time() < LAST_ERROR_TIME + 10.0):
+        return
+    LAST_ERROR_TIME = time.time()
+
+    msg = (
+        "SublimePythonIDE: Could not find Python.\n"
+        "Make sure Python is accessible via one of these methods:\n"
+        "\n"
+        " \xb7 From SublimePythonIDE settings:\n"
+        "   %r\n"
+        " \xb7 From venv settings:\n"
+        "   %r\n"
+        " \xb7 From #! (shebang) line in this file:\n"
+        "   %r\n"
+        " \xb7 From system Python (via $PATH):\n"
+        "   %r\n"
+        "\n"
+        "We use the first non-None value and ensure that the path exists before proceeding.\n"
+        % tuple(d() for d in python_detectors)
+    )
+
+    if not get_setting("suppress_python_not_found_error", False):
+        result = sublime.yes_no_cancel_dialog(
+            msg +
+            "\n"
+            "\"Do Not Show Again\" suppresses this dialog until next launch. "
+            "\"More Info\" shows help for configuring Python or permanently suppressing this dialog.",
+            "More Info", "Do Not Show Again"
+        )
+        # In case the user takes more than 10 seconds to react to the dialog
+        LAST_ERROR_TIME = time.time()
+        if result == sublime.DIALOG_YES:
+            import webbrowser
+            webbrowser.open("https://github.com/JulianEberius/SublimePythonIDE#configuration")
+        elif result == sublime.DIALOG_NO:
+            LAST_ERROR_TIME = float("inf")
+
+    raise OSError(
+        msg +
+        "More info: https://github.com/JulianEberius/SublimePythonIDE#configuration"
+    )
 
 
 def root_folder_for(view):
@@ -391,15 +461,25 @@ def python_only(func):
 
     if num_args == 1:
         @wraps(func)
-        def wrapper1(view):
-            if _is_python_syntax(view) and not view.is_scratch():
-                return func(view)
+        def wrapper1(arg):
+            if isinstance(arg, sublime_plugin.WindowCommand):
+                view = arg.window.active_view()
+            elif isinstance(arg, sublime_plugin.TextCommand):
+                view = arg.view
+            elif type(arg) == sublime.View:
+                view = arg
+            elif type(arg) == sublime.Window:
+                view = arg.active_view()
+            else:
+                view = None
+            if view is not None and _is_python_syntax(view) and not view.is_scratch():
+                return func(arg)
         return wrapper1
 
     else:
         @wraps(func)
         def wrapperN(self, view, *args):
-            if _is_python_syntax(view) and not view.is_scratch():
+            if type(view) == sublime.View and _is_python_syntax(view) and not view.is_scratch():
                 return func(self, view, *args)
         return wrapperN
 
@@ -409,8 +489,8 @@ def _update_color_scheme():
     scopes used by the linting features'''
 
     colors = {
-        "warning": get_setting("warning_color"),
-        "error": get_setting("error_color")
+        "warning": get_setting("warning_color", default_value="EDBA00"),
+        "error": get_setting("error_color", default_value="DA2000")
     }
     sublime_python_colors.update_color_scheme(colors)
 

@@ -14,6 +14,7 @@
 		"CSS Format",
 		"Emmet",
 		"Enhanced Clojure",
+		"FormatLua",
 		"Git",
 		"Highlight",
 		"HTML-CSS-JS Prettify",
@@ -22,9 +23,11 @@
 		"jQuery",
 		"LESS",
 		"Less2Css",
-		"Markdown Preview",
+		"LuaFormat",
 		"MarkdownEditing",
+		"MarkdownPreview",
 		"Package Control",
+		"PowerShell",
 		"Python PEP8 Autoformat",
 		"SCSS",
 		"Shader Syntax (GLSL HLSL Cg)",
@@ -32,6 +35,9 @@
 		"SublimeAStyleFormatter",
 		"SublimeCodeIntel",
 		"SublimeLinter",
+		"SublimeLinter-jshint",
+		"SublimeLinter-json",
+		"SublimeLinter-lua",
 		"SublimeLinter-ruby",
 		"SublimePythonIDE",
 		"SublimeREPL",
@@ -39,6 +45,8 @@
 		"Terminal",
 		"Theme - Flatland",
 		"TrailingSpaces",
-		"Unity3D Shader Highlighter and Snippets"
+		"Unity3D Shader Highlighter and Snippets",
+		"uroboroSQL Formatter",
+		"Vue Syntax Highlight"
 	]
 }

@@ -12,7 +12,7 @@
     //         "python_interpreter": "/Users/USER/.virtualenvs/PROJECT/bin/python"
     //     }
     // }
-    "python_interpreter": "",
+    "python_interpreter": "C:\\Software\\Dev\\WinPython-64bit-3.6.1.0Zero\\python-3.6.1.amd64\\python.exe",
 
     // make python_open_documentation command output in a view or in the output
     // panel if false

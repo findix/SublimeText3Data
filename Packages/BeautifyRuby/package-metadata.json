@@ -1,1 +1,1 @@
-{"sublime_text": "*", "url": "https://github.com/CraigWilliams/BeautifyRuby", "version": "2015.11.11.02.14.31", "platforms": ["*"], "description": "Sublime Text 2 & 3 Plugin to Beautify Ruby", "dependencies": []}
+{"version": "2017.03.30.18.55.05", "url": "https://github.com/CraigWilliams/BeautifyRuby", "dependencies": [], "platforms": ["*"], "sublime_text": "*", "description": "Sublime Text 2 & 3 Plugin to Beautify Ruby"}

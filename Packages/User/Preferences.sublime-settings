@@ -1,10 +1,11 @@
 {
-	"color_scheme": "Packages/User/Mariana (SL) (SublimePythonIDE).tmTheme",
-	"font_face": "source code pro",
+	"color_scheme": "Packages/User/Flatland Dark (SublimePythonIDE).tmTheme",
+	"font_face": "Fira Code",
 	"font_size": 12,
 	"ignored_packages":
 	[
 	],
 	"tab_size": 4,
-	"translate_tabs_to_spaces": true
+	"theme": "Flatland Dark.sublime-theme",
+	"translate_tabs_to_spaces": true,
 }
